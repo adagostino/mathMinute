@@ -429,7 +429,8 @@
           var h = btn.height();
           btn.css({
             lineHeight: h + "px",
-            fontSize: h + "px"
+            fontSize: h + "px",
+            marginTop: -h/2
           });
           var w = btn.width();
           btn.css("marginLeft",-w/2);

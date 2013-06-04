@@ -2,8 +2,8 @@
   var name = "Game";
   mathMinute.extend(name,mathMinute.Animator.subClass({
     init: function(el){
-      this._super(el).$el.addClass("game");
-      this.resize();
+      this._super(el).$el.addClass("game gameButton");
+
 
       var $this = this;
       this.$el.each(function(idx){
@@ -25,6 +25,7 @@
         $this.addEquationSlide(ct++,this);
       });
 
+
       this.$el.on("next",function(e,slide){
         $this.nextEquation("up",218);
       });
@@ -38,8 +39,8 @@
         $this.resizeSlides();
       });
 
-      this.resizeSlides();
-
+      //this.resize().resizeSlides();
+      return this;
     },
     addEquationSlide: function(ind,el){
       var $el = el ? el.$el ? el.$el : $(el) : this.$el;
@@ -59,6 +60,7 @@
     },
     addStartSlide: function(ind,el){
       var $el = el ? el.$el ? el.$el : $(el) : this.$el;
+      var ratio = .75, buffer = 40;
       var $this = this;
       $el.each(function(idx){
         var $t = $(this);
@@ -68,23 +70,68 @@
         $this.storeSlide(slide,"startSlide",this);
         var timer = $this.get("timer",this);
         var btn = slide.getButton(li).click(function(e){
-          $this.changeSlide({
-            inSlide: parseInt($t.find(".equationSlide").attr("data-index")),
-            inDir: "fade",
-            outDir: "left",
-            inBefore: function(slide){
-              slide.newEquation().reset();
-            },
-            inAfter: function(slide){
-              slide.getInput(this).focus();
-            },
-            outAfter: function(slide){
-              timer.show().start();
-            },
-            timeOut: 318,
-            timeIn: 0
-          },$t);
+          if ($t.hasClass("gameButton")){
+            var btn = $(this);
+            var h1 = $t.height();
+            var w1 = $t.width();
+            var o1 = $t.offset();
+
+            var ww = $(window).width();
+            var wh = $(window).height();
+            var ww9 = ww-buffer;
+            var wh9 = wh-buffer;
+
+            var mw = parseFloat($t.css("maxWidth"));
+            var mh = parseFloat($t.css("maxHeight"));
+            var w = ww9 < mw ? ww9 : mw;
+            var h = ratio*w;
+            if (h > wh9){
+              h = wh9;
+              w = h/ratio;
+            }
+            $t.removeClass("gameButton").css({
+              width: w1,
+              height: h1,
+              left: o1.left,
+              top: o1.top
+            }).bind("animateStep",animateStep);
+            btn.css("marginLeft",-btn.width()/2);
+
+            $this.animate({
+              width: w,
+              height: h,
+              left: ww/2,
+              top: (wh9-h+buffer)/2,
+              marginLeft: -w/2
+            },318,function(){
+              $t.unbind("animateStep",animateStep);
+            },null,$t);
+
+          }else{
+            $this.changeSlide({
+              inSlide: parseInt($t.find(".equationSlide").attr("data-index")),
+              inDir: "fade",
+              outDir: "left",
+              inBefore: function(slide){
+                slide.newEquation().reset();
+              },
+              inAfter: function(slide){
+                slide.getInput(this).focus();
+              },
+              outAfter: function(slide){
+                timer.show().start();
+              },
+              timeOut: 318,
+              timeIn: 0
+            },$t);
+          }
         });
+
+        function animateStep(e,commands){
+          //console.log(commands);
+          $this.resizeSlides(this);
+        }
+
       });
       return this;
     },
@@ -183,43 +230,44 @@
       var wh9 = wh-buffer;
       this.$el.each(function(idx){
         var $t = $(this);
-        var mw = parseFloat($t.css("maxWidth"));
-        var mh = parseFloat($t.css("maxHeight"));
-        var w = ww9 < mw ? ww9 : mw;
-        var h = ratio*w;
-        if (h > wh9){
-          h = wh9;
-          w = h/ratio;
-        }
-        var css = {};
-        if (w<=ww9){
-          css.left = "50%";
-          css.right = "clear";
-          css.width = Math.round(w);
-          css.marginLeft = Math.round(-w/2);
-        }else{
+        if (!$t.hasClass("gameButton")){
+          var mw = parseFloat($t.css("maxWidth"));
+          var mh = parseFloat($t.css("maxHeight"));
+          var w = ww9 < mw ? ww9 : mw;
+          var h = ratio*w;
+          if (h > wh9){
+            h = wh9;
+            w = h/ratio;
+          }
+          var css = {};
+          if (w<=ww9){
+            css.left = "50%";
+            css.right = "clear";
+            css.width = Math.round(w);
+            css.marginLeft = Math.round(-w/2);
+          }else{
           //var lr = (ww-w)/2;
-          var lr = Math.round(buffer/2);
-          css.left = lr;
-          css.right = lr;
-          css.marginLeft = "clear";
-          css.width= "auto";
+            var lr = Math.round(buffer/2);
+            css.left = lr;
+            css.right = lr;
+            css.marginLeft = "clear";
+            css.width= "auto";
+          }
+          if (h <= wh9){
+            css.top = "50%";
+            css.bottom = "clear";
+            css.marginTop = Math.round(-h/2);
+            css.height = h;
+          }else{
+            //var tb = (wh-h)/2;
+            var tb = Math.round(buffer/2);
+            css.top = tb;
+            css.bottom = tb;
+            css.marginTop = "clear";
+            css.height = "auto";
+          }
+          $t.css(css);
         }
-        if (h <= wh9){
-          css.top = "50%";
-          css.bottom = "clear";
-          css.marginTop = Math.round(-h/2);
-          css.height = h;
-        }else{
-          //var tb = (wh-h)/2;
-          var tb = Math.round(buffer/2);
-          css.top = tb;
-          css.bottom = tb;
-          css.marginTop = "clear";
-          css.height = "auto";
-        }
-        $t.css(css);
-
       });
       return this;
     },

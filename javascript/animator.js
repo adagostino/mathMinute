@@ -194,6 +194,7 @@
       var $el = el ? $(el) : this.$el;
       $el.each(function(idx){
         $(this).css(commands);
+        $(this).trigger("animateStep",[commands]);
       });
       return this;
     },

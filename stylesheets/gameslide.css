@@ -121,7 +121,13 @@
   left: 50%;
   top: 50%;
   height: 20%;
-  margin-top: -10%;
+  min-height: 50px;
+  width: auto;
+  text-align: center;
   cursor: pointer;
 }
 
+.gameButton .startSlide .startButton{
+  height: 100%;
+  width: 100%;
+}
