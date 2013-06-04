@@ -8,13 +8,12 @@
       return this;
     },
     animate: function(opts,time,func,startState,el){
-      var isAnimating = this._data("isAnimating");
       time = typeof time === "number" ? time : 218;
       $this = this;
       var $el = el ? $(el) : this.$el;
       $el.each(function(idx){
         var $t = $(this);
-        if (!isAnimating[idx] && $t.is(":visible")){
+        if (!$this.get("isAnimating",this) && $t.is(":visible")){
           if (!startState){
             startState = new Object();
             for (var i in opts){
