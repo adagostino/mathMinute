@@ -1,9 +1,8 @@
 (function(mathMinute){
   var name = "Game";
   mathMinute.extend(name,mathMinute.Animator.subClass({
-    init: function(el){
+    init: function(el,opts){
       this._super(el).$el.addClass("game gameButton");
-
 
       var $this = this;
       this.$el.each(function(idx){
@@ -24,7 +23,7 @@
         $this.addEquationSlide(ct++,this);
         $this.addEquationSlide(ct++,this);
       });
-
+      (typeof opts === "object") && this.setMathTypeButtons(opts.mathTypeButtons).setDifficultyButtons(opts.difficultyButtons);
 
       this.$el.on("next",function(e,slide){
         $this.nextEquation("up",218);
@@ -113,7 +112,11 @@
               inDir: "fade",
               outDir: "left",
               inBefore: function(slide){
-                slide.newEquation().reset();
+                var mtb = $this.get("mathTypeButtons",$t);
+                var mathType = mtb ? mtb.value()[0] : "Any";
+                var d = $this.get("difficultyButtons",$t);
+                var difficulty = d ? d.value()[0] : "Any";
+                slide.newEquation(mathType,difficulty).reset();
               },
               inAfter: function(slide){
                 slide.getInput(this).focus();
@@ -193,7 +196,11 @@
           ea[nextInd].show({
             dir: "fade",
             before: function(slide){
-              slide.newEquation().reset();
+              var mtb = $this.get("mathTypeButtons",$t);
+              var mathType = mtb ? mtb.value()[0] : "Any";
+              var d = $this.get("difficultyButtons",$t);
+              var difficulty = d ? d.value()[0] : "Any";
+              slide.newEquation(mathType,difficulty).reset();
             },
             after: function(slide){
               slide.getInput(this).focus();
@@ -281,9 +288,15 @@
       });
       return this;
     },
-    next: function(){
-
+    setMathTypeButtons: function(radialList,el){
+      return this.setButtons("mathTypeButtons",radialList,el);
+    },
+    setDifficultyButtons: function(radialList,el){
+      return this.setButtons("difficultyButtons",radialList,el);
+    },
+    setButtons: function(type,radialList,el){
+      radialList && type && this._data(type,radialList.mathMinute ? radialList : new mathMinute.RadialList(radialList),el);
+      return this;
     }
-
   },name));
 })(mathMinute);

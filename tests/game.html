@@ -83,9 +83,10 @@
   <script type="text/javascript">
 
     $(document).ready(function(){
-      var t = new mathMinute.RadialList("#mathType",{buttons: ["+","-","&times","&divide","Any"]});
-      var g = new mathMinute.Game("#game");
-      var d = new mathMinute.RadialList("#difficulty",{buttons: ["Easy","Med","Hard","Very Hard","Any"]});
+      var t = new mathMinute.RadialList("#mathType",{buttons: ["+","-","&times","&divide","Any"]}).value("Any");
+      var d = new mathMinute.RadialList("#difficulty",{buttons: ["Easy","Med","Hard","Very Hard","Any"]}).value("Any");
+      var g = new mathMinute.Game("#game",{mathTypeButtons: "#mathType", difficultyButtons: "#difficulty"});
+
     });
   </script>
 </body>

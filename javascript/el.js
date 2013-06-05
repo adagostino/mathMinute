@@ -1,6 +1,7 @@
 (function(mathMinute){
   var name = "El";
   mathMinute.extend(name,Object.subClass({
+    mathMinute: "version 0.1",
     name: name,
     init: function(el){
       this.$el = $(el);

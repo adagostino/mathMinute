@@ -138,11 +138,10 @@
         $this._data("equation",eq,this);
 
         var $t = $(this);
-        cli_i.click(function(e){
+        mathMinute.mimicClick(cli_i,function(e){
           $t.parent().trigger("next",[$this]);
         }).mousedown(function(e){
           bli_i.is(":focus") && bli_i.blur();
-             $(this).addClass("active"); // have to do this instead of easy :active b/c of firefox being THE BEST.
           // prevent crazy selections etc;
           return false;
         });
@@ -169,14 +168,7 @@
         });
       }
 
-      // blech -- not very good.
-      var mouseup = function(e){
-        $this.$el.find("a.iconContainer.active:visible").each(function(idx){
-          $(this).removeClass("active");
-        });
-      }
-
-      $(document).bind("mousedown",mousedown).bind("mouseup",mouseup);
+      $(document).bind("mousedown",mousedown);
       this.$el.bind("remove",function(){
         $(document).unbind("mousedown",mousedown);
       });
@@ -186,6 +178,7 @@
     newEquation: function(type,difficulty){
       var to = getType(type);
       var no = getMaxNumbers(difficulty,to.type);
+      console.log(to,difficulty);
       var n1 = null, n2 = null, n3 = null, n4 = null;
       switch (to.type){
         case "/":
@@ -219,8 +212,22 @@
       };
 
       function getType(type){
-        var nType = typeof type === "string" ? type.toLowerCase() : getRandomType();
+        var nType = typeof type === "string" && type.toLowerCase() != "any" ? testType(type) : getRandomType();
         return {type: nType, oType: type || "random"};
+
+        function testType(type){
+          switch(type.charCodeAt(0)){
+            case 215:
+              type = "*";
+              break;
+            case 247:
+              type = "/";
+              break;
+            default:
+              break;
+          }
+          return type;
+        }
 
         function getRandomType(){
           var n = getRandom(3);
@@ -239,7 +246,7 @@
         }
       };
       function getMaxNumbers(difficulty,type){
-        var nD = typeof difficulty === "string" ? difficulty.toLowerCase() : getRandomDifficulty();
+        var nD = typeof difficulty === "string" && difficulty.toLowerCase() != "any" ? difficulty.toLowerCase() : getRandomDifficulty();
         var n1 = null;
         var n2 = null;
         var d = null;

@@ -242,6 +242,33 @@
     },
     normalizeNum: function(num,dec){
       return {sign: num < 0 ? -1 : 1, pow: Math.pow(10,typeof dec !== "number" ? 0 : dec)};
+    },
+    mimicClick: function(el,func){
+      $(el).each(function(idx){
+        (function(el){
+          var clicked = false;
+          $(el).mousedown(function(e){
+            clicked = true;
+            $(this).addClass("tempActive");
+          }).mouseup(function(e){
+            if (clicked){
+              func.call(this,e);
+              $(this).removeClass("tempActive");
+            }
+            //clicked && $(this).trigger("activateButton").removeClass("tempActive");
+            clicked = false;
+          });
+          var mouseup = function(e){
+            (e.target !== el && clicked) && $(el).removeClass("tempActive");
+            clicked = false;
+          }
+          $(document).bind('mouseup',mouseup);
+          $(el).bind("remove",function(){
+            $(document).unbind('mouseup',mouseup);
+          });
+        })(this);
+      });
+      return el;
     }
   };
   window.mathMinute = mathMinute;

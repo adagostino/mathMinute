@@ -3,17 +3,15 @@
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el){
       this._super(el);
-      this.$el.addClass("button").click(function(){
-        var $t = $(this);
-        if (!$t.hasClass("active")){
-          $t.trigger("activateButton");
-        }
-        return false;
-      });
+      this.$el.addClass("button");
       var $this = this;
       this.$el.each(function(){
         $(this).attr("data-value") || $(this).attr("data-value",$(this).html());
         $this.fitText(this);
+        // Wish I could just use "click", but that sometimes doesn't fire in chrome (maybe it's the magic mouse?)
+        mathMinute.mimicClick(this,function(e){
+          $(this).trigger("activateButton");
+        });
       });
       return this;
     },
@@ -108,8 +106,11 @@
         }
         btnList.length++;
         $btn.bind("activateButton",function(){
-          //$(this).hasClass("active") ? $(this).removeClass("active") : $(this).addClass("active");
-          $(this).addClass("active");
+          var value = $btn.attr("data-value");
+          var currButton = $this.get("currentButton",$t);
+          if (!currButton || currButton && currButton.value != value){
+            $this.value(value,$t);
+          }
         });
       });
       return this;
@@ -123,13 +124,39 @@
         var btnList = $this.get("buttonList",$t) || $this._data("buttonList",{length: 0},$t)[0];
         for (var i=0; i<btnList.length; i++){
           if(btnList[i].value == val){
-            inList = true;
+            inList = btnList[i];
             return false;
           }
         }
       });
       return inList;
     },
+    value: function(val,el){
+      if (val) {
+        el = el ? $(el) : this.$el;
+        var $this = this;
+        el.each(function(idx){
+          var $t = $(this);
+          var li = $this.inButtonList(val,this);
+          if (li && !li.button.$el.hasClass("active")){
+            var currButton = $this.get("currentButton",$t);
+            currButton && currButton.button.$el.removeClass("active");
+            li.button.$el.addClass("active");
+            $this._data("currentButton",li,$t);
+          }
+        });
+        return this;
+      }else{
+        var vals = this.get("currentButton",el);
+        return (vals.length) ?
+          (function(){
+            for (var i=0; i<vals.length; i++){
+              vals[i] = vals[i].value;
+            }
+            return vals;
+          })() : vals.value;
+      }
+    }
   },name));
 
 })(mathMinute);
