@@ -103,6 +103,7 @@ var ninja = new Ninja();
     function Class() {
       // All construction is actually done in this method
       if (!initializing && this.init){
+        // TODO: Think of a way to check initialization here instead of in each class's init function
         this.init.apply(this,arguments);
       }
     }

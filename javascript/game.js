@@ -2,9 +2,10 @@
   var name = "Game";
   mathMinute.extend(name,mathMinute.Animator.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
+      this._super(el);
+      if (this.initialized()) return this;
 
-      this._super(el).$el.addClass("game gameButton");
+      this.$el.addClass("game gameButton");
       var $this = this;
       this.$el.each(function(idx){
         var timer = mathMinute.exists(".timer",this) || $("<div>",{"class":"timer"}).appendTo(this);
@@ -14,7 +15,10 @@
           fill: "rgba(51,51,51,1)",
           buffer: 0,
           reflect: true,
-          seconds: 60
+          seconds: 10
+        });
+        timer.bind("clockStopped",function(e,startTime,stopTime){
+          console.log(startTime,stopTime);
         });
         $this._data("timer",ia,this);
         var ul = mathMinute.exists(".slides",this) || $("<ul>",{"class":"slides"}).appendTo(this);
@@ -39,7 +43,6 @@
         $this.resizeSlides();
       });
 
-      //this.resize().resizeSlides();
       return this;
     },
 

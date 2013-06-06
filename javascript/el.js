@@ -18,6 +18,11 @@
       // use to get Element from data
       return el ? this._get(key,el)[0] : this._data(key);
     },
+    initialized: function(){
+      var isInit = this.$el && this.get("init").length == this.$el.length;
+      !isInit && this._data("init",true);
+      return isInit;
+    },
     listenForResize: function(func){
       var $this = this;
       var resize = function(e){

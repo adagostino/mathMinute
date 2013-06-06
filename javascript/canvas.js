@@ -2,10 +2,10 @@
   var name = "Canvas";
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el){
-      if (this.get && this.get("init").length == el.length) return this;
+      this._super(el);
+      if (this.initialized()) return this;
 
-      this._super(el).$el.addClass("mathCanvas");
-      this.name = name;
+      this.$el.addClass("mathCanvas");
       //initialize the canvas and its context
       this.setCanvas();
       this.sizeCanvas();
@@ -49,7 +49,6 @@
       };
       $(window).bind("resize",resize);
 
-      this._data("init",true);
       return this;
     },
     beginDraw: function(x,y,time){

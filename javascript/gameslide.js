@@ -2,13 +2,13 @@
   var name = "GameSlide";
   mathMinute.extend(name,mathMinute.Animator.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
+      this._super(el);
+      if (this.initialized()) return this;
 
-      this._super(el).$el.addClass("slide");
+      this.$el.addClass("slide");
       if (typeof opts === "object"){
         this.setIndex(opts.index);
       }
-      this._data("init",true);
       return this;
     },
     setIndex: function(ind){
@@ -122,9 +122,10 @@
   var name = "EquationSlide";
   mathMinute.extend(name,mathMinute.GameSlide.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
+      this._super(el,opts);
+      if (this.initialized()) return this;
 
-      this._super(el,opts).$el.addClass("equationSlide");
+      this.$el.addClass("equationSlide");
       var $this = this;
       this.$el.each(function(idx){
         var ediv = mathMinute.exists("div.q",this) || $("<div>",{"class":"q"}).appendTo(this);
@@ -402,11 +403,11 @@
   var name = "StartSlide";
   mathMinute.extend(name,mathMinute.GameSlide.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
       opts = typeof opts === "object" ? opts : {index: 0};
       this._super(el,opts);
+      if (this.initialized()) return this;
+
       this.initButton().setButton(opts.buttonText).resize();
-      this._data("init",true);
       return this;
     },
     initButton: function(){

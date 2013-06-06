@@ -2,13 +2,12 @@
   var name = "Animator";
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el){
-      if (this.get && this.get("init").length == el.length) return this;
-
       this._super(el);
+      if (this.initialized()) return this;
+
       this.checkStatic();
       this._data("isAnimating",false);
 
-      this._data("init",true);
       return this;
     },
     animate: function(opts,time,func,startState,el){

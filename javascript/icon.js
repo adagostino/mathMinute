@@ -2,9 +2,9 @@
   var name = "Icon";
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
-
       this._super(el);
+      if (this.initialized()) return this;
+
       if (opts){
         this.setPath(opts).setBuffer(opts).setReflect(opts).setAttr(opts);
       }
@@ -13,7 +13,6 @@
       this.listenForResize(function(){
         $this.resize();
       });
-      this._data("init",true);
       return this;
     },
     getBuffer: function(el){
@@ -132,14 +131,14 @@
   var name = "WordBubble";
   mathMinute.extend(name,mathMinute.Icon.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
       var path = "M16,5.333c-7.732,0-14,4.701-14,10.5c0,1.982,0.741,3.833,2.016,5.414L2,25.667l5.613-1.441c2.339,1.317,5.237,2.107,8.387,2.107c7.732,0,14-4.701,14-10.5C30,10.034,23.732,5.333,16,5.333z";
       opts = opts || {};
       opts.path = path;
       this._super(el,opts);
+      if (this.initialized()) return this;
+
       this.setText().text(opts.text).resize();
 
-      this._data("init",true);
       return this;
     },
     setText: function(el){
@@ -214,14 +213,13 @@
   var name = "Timer";
   mathMinute.extend(name,mathMinute.WordBubble.subClass({
     init: function(el,opts){
-      if (this.get && this.get("init").length == el.length) return this;
-
       this._super(el,opts);
+      if (this.initialized()) return this;
+
       if (opts){
         this.setTimer(opts.seconds).reset();
       }
 
-      this._data("init",true);
       return this;
     },
     setTimer: function(seconds){

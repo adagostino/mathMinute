@@ -2,9 +2,10 @@
   var name = "Equation";
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el){
-      if (this.get && this.get("init").length == el.length) return this;
+      this._super(el);
+      if (this.initialized()) return this;
 
-      this._super(el).$el.addClass("equation gameTextShadow");
+      this.$el.addClass("equation gameTextShadow");
       var $this = this;
       this.$el.each(function(idx){
         var pad = mathMinute.exists(".pad",this) || $("<div>",{"class":"pad"}).appendTo(this);
@@ -31,7 +32,6 @@
         $this._data("canvas",c,this);
       });
 
-      this._data("init",true);
       return this;
     },
     getCanvas: function(el){
