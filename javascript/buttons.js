@@ -2,6 +2,7 @@
   var name = "Button";
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el){
+      if (this.get && this.get("init").length == el.length) return this;
       this._super(el);
       this.$el.addClass("button");
       var $this = this;
@@ -13,6 +14,7 @@
           $(this).trigger("activateButton");
         });
       });
+      this._data("init",true);
       return this;
     },
     fitText: function(el){
@@ -62,6 +64,7 @@
   mathMinute.extend(name,mathMinute.El.subClass({
     init: function(el,opts){
       //opts: {buttons: [string,...]}
+      if (this.get && this.get("init").length == el.length) return this;
       this._super(el);
       opts = typeof opts === "object" ? opts : {buttons: []};
       opts.buttons = typeof opts.buttons === "object" ? opts.buttons : [];
@@ -76,6 +79,7 @@
           $this.addButton(opts.buttons[i],$t);
         }
       });
+      this._data("init",true);
       return this;
     },
     addButton: function(val,el){
