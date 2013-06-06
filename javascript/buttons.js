@@ -68,9 +68,8 @@
       var $this = this;
       this.$el.each(function(idx){
         var $t = $(this);
-        var ul = $this._data("ul",$(this).is("ul") ? this : $("<ul>").appendTo(this),this)[0];
-        ul.addClass("radialList");
-        ul.find(".button").each(function(idx){
+        var ul = $this.get("ul",this) || $this._data("ul",$t.find("ul").addBack("ul").length > 0 ? $t.find("ul").addBack("ul") :  $("<ul>").appendTo($t),this)[0];
+        ul.addClass("radialList").find(".button").each(function(idx){
           $this.addButtonToList($(this),$t);
         });
         for (var i in opts.buttons){
