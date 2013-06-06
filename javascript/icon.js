@@ -212,16 +212,6 @@
         this.setTimer(opts.seconds).reset();
       }
       var $this = this;
-      /*
-      this.$el.click(function(){
-        //$this.stop(this).start(this);
-        if ($this.get("clockTicking",this)){
-          $this.stop(this);
-        }else{
-          $this.reset(this).start(this);
-        }
-      });
-      */
       return this;
     },
     setTimer: function(seconds){
