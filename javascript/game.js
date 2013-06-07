@@ -8,6 +8,7 @@
       this.$el.addClass("game gameButton");
       var $this = this;
       this.$el.each(function(idx){
+        var $t = $(this);
         var timer = mathMinute.exists(".timer",this) || $("<div>",{"class":"timer"}).appendTo(this);
         var ia = new mathMinute.Timer(timer,{
           stroke: "rgba(0,0,0,0.3)",
@@ -15,10 +16,27 @@
           fill: "rgba(51,51,51,1)",
           buffer: 0,
           reflect: true,
-          seconds: 10
+          seconds: 61
         });
         timer.bind("clockStopped",function(e,startTime,stopTime){
-          console.log(startTime,stopTime);
+          //console.log(startTime,stopTime);
+          timer.hide();
+          $this._data("gameRunning",false,$t);
+           //opts: {inSlide: number, inDir: string, outDir: string,inBefore: func, inAfter: func, outBefore: func, outAfter: func}
+          $this.changeSlide({
+            inSlide: 3,
+            inDir: "down",
+            outDir: "fade",
+            inBefore: function(slide){
+              slide.$el.css("zIndex",1);
+              slide.reset();
+            },
+            outBefore: function(slide){
+              slide.$el.css("zIndex",0);
+            },
+            timeIn: 318,
+            timeOut: 318,
+          },$t);
         });
         $this._data("timer",ia,this);
         var ul = mathMinute.exists(".slides",this) || $("<ul>",{"class":"slides"}).appendTo(this);
@@ -27,6 +45,7 @@
         $this.addStartSlide(ct++,this);
         $this.addEquationSlide(ct++,this);
         $this.addEquationSlide(ct++,this);
+        $this.addEndSlide(ct++,this);
       });
       (typeof opts === "object") && this.setMathTypeButtons(opts.mathTypeButtons).setDifficultyButtons(opts.difficultyButtons);
 
@@ -62,9 +81,24 @@
       });
       return this;
     },
+    addEndSlide: function(ind,el){
+      var $el = el ? el.$el ? el.$el : $(el) : this.$el;
+      var $this = this;
+      $el.each(function(idx){
+        var $t = $(this);
+        var ul = $this._get("ul",this)[0];
+        var li = mathMinute.exists("li.slide.endSlide[data-index='"+ind+"']",ul) || $("<li>",{"class":"slide endSlide","data-index":ind}).appendTo(ul);
+        var slide = new mathMinute.EndSlide(li,{index: ind});
+        $this.storeSlide(slide,"endSlide",this);
+        li.bind("xout",function(e){
+          $this.hideGame($t);
+        });
+      });
+      return this;
+    },
     addStartSlide: function(ind,el){
       var $el = el ? el.$el ? el.$el : $(el) : this.$el;
-      var ratio = .75, buffer = 40;
+
       var $this = this;
       $el.each(function(idx){
         var $t = $(this);
@@ -75,42 +109,7 @@
         var timer = $this.get("timer",this);
         var btn = slide.getButton(li).click(function(e){
           if ($t.hasClass("gameButton")){
-            var btn = $(this);
-            var h1 = $t.height();
-            var w1 = $t.width();
-            var o1 = $t.offset();
-
-            var ww = $(window).width();
-            var wh = $(window).height();
-            var ww9 = ww-buffer;
-            var wh9 = wh-buffer;
-
-            var mw = parseFloat($t.css("maxWidth"));
-            var mh = parseFloat($t.css("maxHeight"));
-            var w = ww9 < mw ? ww9 : mw;
-            var h = ratio*w;
-            if (h > wh9){
-              h = wh9;
-              w = h/ratio;
-            }
-            $t.removeClass("gameButton").css({
-              width: w1,
-              height: h1,
-              left: o1.left,
-              top: o1.top
-            }).bind("animateStep",animateStep);
-            btn.css("marginLeft",-btn.width()/2);
-
-            $this.animate({
-              width: w,
-              height: h,
-              left: ww/2,
-              top: (wh9-h+buffer)/2,
-              marginLeft: -w/2
-            },318,function(){
-              $t.unbind("animateStep",animateStep);
-            },null,$t);
-
+            $this.showGame($t);
           }else{
             $this.changeSlide({
               inSlide: parseInt($t.find(".equationSlide").attr("data-index")),
@@ -136,11 +135,6 @@
           }
         });
 
-        function animateStep(e,commands){
-          //console.log(commands);
-          $this.resizeSlides(this);
-        }
-
       });
       return this;
     },
@@ -154,7 +148,7 @@
         var $t = $(this);
         var currInd = parseInt($t.find("li.slide:visible").attr("data-index"));
         var curr = slides[currInd].slide;
-        var nextInd = typeof inSlide === "number" ? opts.inSlide : currInd+1;
+        var nextInd = typeof opts.inSlide === "number" ? opts.inSlide : currInd+1;
         nextInd = nextInd > slides.length-1 ?  (nextInd % slides.length) : nextInd;
         var next = slides[nextInd].slide;
         curr.stop(true).hide({
@@ -293,6 +287,106 @@
           slides[i].slide.resize();
         }
       });
+      return this;
+    },
+    hideGame: function(el){
+      el = el ? $(el) : this.$el;
+      var $this = this;
+      el.each(function(idx){
+        var $t = $(this);
+        var clone = $this.get("clone",this);
+        $this.changeSlide({
+          inSlide: 0,
+          inDir: "right",
+          outDir: "fade",
+          inBefore: function(slide){
+            slide.$el.css("zIndex",1);
+            slide.reset();
+          },
+          outBefore: function(slide){
+            slide.$el.css("zIndex",0);
+          },
+          timeIn: 0,
+          timeOut: 0
+        },$t);
+        clone.show();
+        var pOff = clone.parent().offset();
+        var tOff = $t.offset();
+        var cOff = clone.offset();
+        var start = {
+          position: "absolute",
+          left: tOff.left - pOff.left,
+          top: tOff.top - pOff.top,
+          marginLeft: 0,
+          martinTop: 0
+        };
+        $t.css(start).bind("animateStep",animateStep);
+        $this.animate({
+          width: clone.width(),
+          height: clone.height(),
+          left: cOff.left-pOff.left,
+          top: cOff.top - pOff.top
+        },318,function(){
+          $t.unbind("animateStep",animateStep);
+          clone.hide();
+          $t.removeClass("gameMode").addClass("gameButton").css("position","relative");
+          $this.resizeSlides($t);
+        },null,$t);
+      });
+      function animateStep(e,commands){
+        //console.log(commands);
+        $this.resizeSlides(this);
+      }
+      return this;
+    },
+    showGame: function(el){
+      el = el ? $(el) : this.$el;
+      var ratio = .75, buffer = 40, $this = this;
+      el.each(function(idx){
+        var $t = $(this);
+        var clone = $this.get("clone",this) || $this._data("clone",$t.before($t.clone(false,false).addClass("clone").hide().empty()).prev(),this)[0];
+
+        var btn = $t.find(".startButton");
+        var h1 = $t.height();
+        var w1 = $t.width();
+
+        var o1 = $t.offset();
+
+        var ww = $(window).width();
+        var wh = $(window).height();
+        var ww9 = ww-buffer;
+        var wh9 = wh-buffer;
+
+        var mw = parseFloat($t.css("maxWidth"));
+        var mh = parseFloat($t.css("maxHeight"));
+        var w = ww9 < mw ? ww9 : mw;
+        var h = ratio*w;
+        if (h > wh9){
+          h = wh9;
+          w = h/ratio;
+        }
+        $t.removeClass("gameButton").addClass("gameMode").css({
+          width: w1,
+          height: h1,
+          position: "fixed",
+          left: o1.left,
+          top: o1.top
+        }).bind("animateStep",animateStep);
+        btn.css("marginLeft",-btn.width()/2);
+
+        $this.animate({
+          width: w,
+          height: h,
+          left: ww/2,
+          top: (wh9-h+buffer)/2,
+          marginLeft: -w/2
+        },318,function(){
+          $t.unbind("animateStep",animateStep);
+        },null,$t);
+      });
+      function animateStep(e,commands){
+        $this.resizeSlides(this);
+      }
       return this;
     },
     setMathTypeButtons: function(radialList,el){

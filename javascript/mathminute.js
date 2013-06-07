@@ -243,19 +243,20 @@
     normalizeNum: function(num,dec){
       return {sign: num < 0 ? -1 : 1, pow: Math.pow(10,typeof dec !== "number" ? 0 : dec)};
     },
-    mimicClick: function(el,func){
+    mimicClick: function(el,func,returnTrue){
+      returnTrue = typeof returnTrue === "boolean" ? returnTrue : true;
       $(el).each(function(idx){
         (function(el){
           var clicked = false;
           $(el).mousedown(function(e){
             clicked = true;
             $(this).addClass("tempActive");
+            return returnTrue;
           }).mouseup(function(e){
             if (clicked){
-              func.call(this,e);
               $(this).removeClass("tempActive");
+              return func.call(this,e);
             }
-            //clicked && $(this).trigger("activateButton").removeClass("tempActive");
             clicked = false;
           });
           var mouseup = function(e){

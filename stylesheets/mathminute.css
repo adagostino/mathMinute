@@ -22,3 +22,10 @@
    -3px  3px 0px rgba(51,51,51,1),
    -4px  4px 0px rgba(51,51,51,1);
 }
+
+.opacity{
+  opacity: 0.6;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+  *filter:alpha(opacity=60);
+  -khtml-opacity: 0.6;
+}

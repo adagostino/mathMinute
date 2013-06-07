@@ -112,7 +112,19 @@
           break;
       }
       return {start: cssStart, end: cssEnd};
-    }
+    },
+    reset: function(el){
+      el = el ? $(el) : this.$el;
+      var $this = this;
+      el.each(function(idx){
+        var $t = $(this);
+        if ($t.is(":visible")){
+          $t.width("100%");
+          $this.resize(this);
+        }
+      });
+      return this;
+    },
   },name));
 
 
@@ -452,5 +464,41 @@
       });
       return this;
     },
+  },name));
+})(mathMinute);
+
+(function(mathMinute){
+  var name = "EndSlide";
+  mathMinute.extend(name,mathMinute.GameSlide.subClass({
+    init: function(el,opts){
+      opts = typeof opts === "object" ? opts : {index: 0};
+      this._super(el,opts);
+      if (this.initialized()) return this;
+      this.$el.each(function(idx){
+        var $t = $(this);
+        var xout = (mathMinute.exists(".xout",this) || $("<div>",{"class":"xout"}).appendTo(this)).addClass("gameTextShadow").html("&times;");
+        mathMinute.mimicClick(xout,function(e){
+          $t.trigger("xout");
+        },false);
+        $this._data("xout",xout,this,name);
+      });
+      return this;
+    },
+    resize: function(el){
+      el = el ? $(el) : this.$el;
+      var $this = this;
+      el.each(function(idx){
+        var $t = $(this);
+        if ($t.is(":visible")){
+          var xout = $this.get("xout",$t);
+          var h = xout.height();
+          xout.css({
+            lineHeight: h + "px",
+            fontSize:   h + "px"
+          });
+        }
+      });
+      return this;
+    }
   },name));
 })(mathMinute);
