@@ -290,7 +290,7 @@
           $this._data("clockStarted",null,this);
           $this._data("clockStopped",null,this);
           $this._data("secondsLeft",null,this);
-          $this._data("paused",true,this);
+          $this._data("paused",false,this);
         }
       });
       return this;
